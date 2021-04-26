@@ -1,4 +1,5 @@
-import { Engine, HemisphericLight, Scene } from "@babylonjs/core";
+import { Engine, Scene } from "@babylonjs/core";
+import { buildGround } from "./buildGround";
 import { createCamera, createLight } from "./createCamera";
 
 export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
@@ -7,6 +8,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   camera.attachControl(canvas, true);
   const light = createLight(scene)
 
+  const { ground, largeGround } = buildGround(scene)
 
 
   return scene;
