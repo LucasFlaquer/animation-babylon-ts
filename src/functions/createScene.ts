@@ -62,6 +62,10 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
         hero.rotate(Vector3.Up(), -heroRotationSpeed);
         keydown = true;
       }
+      if (inputMap["d"]) {
+        hero.rotate(Vector3.Down(), -heroRotationSpeed);
+        keydown = true;
+      }
 
 
 
