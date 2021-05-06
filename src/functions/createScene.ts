@@ -3,6 +3,7 @@ import { buildGround } from "./buildGround";
 import { createSkybox } from "./buildSky";
 import { createCamera, createLight } from "./createCamera";
 import { loadHero } from "./loadHero";
+import { createBarrel } from "./createBarrel";
 
 export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   const scene = new Scene(engine)
@@ -14,7 +15,8 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   const skybox = createSkybox(scene)
   skybox.position.y += 20
 
-  // const hero = loadHero(scene)
+  createBarrel("1", scene, new Vector3(10), (barrel) => console.log(barrel));
+
   const hero = SceneLoader.ImportMesh("", "https://assets.babylonjs.com/meshes/", "HVGirl.glb", scene, (newMeshes, particleSystems, skeletons, animationGroups) => {
     const hero = newMeshes[0];
     //Scale the model down        
@@ -80,8 +82,6 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
         hero.rotate(Vector3.Down(), -heroRotationSpeed);
         keydown = true;
       }
-
-
 
       //Manage animations to be played  
       if (keydown) {
