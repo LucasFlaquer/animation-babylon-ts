@@ -21,9 +21,10 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     hero.scaling.scaleInPlace(0.1);
 
     //Hero character variables 
-    const heroSpeed = 0.03;
-    const heroSpeedBackwards = 0.01;
+    const heroSpeed = .1;
+    const heroSpeedBackwards = 0.1;
     const heroRotationSpeed = 0.1;
+    const boundaryRadius = 18;
     let animating = true;
     const walkAnim = scene.getAnimationGroupByName("Walking");
     const walkBackAnim = scene.getAnimationGroupByName("WalkingBack");
@@ -47,14 +48,27 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       inputMap[evt.sourceEvent.key] = evt.sourceEvent.type == "keydown";
     }));
 
+    const isHeroInsideBoundaries = (speed: number) => {
+      const direction = hero.forward.scaleInPlace(speed);
+      const z = direction.z < 0 ? -1 : 1;
+      const x = direction.x < 0 ? -1 : 1;
+
+      const zNext = hero.position.z + speed + z;
+      const xNext = hero.position.x + speed + x;
+
+      const heroRadius = Math.sqrt(Math.pow(xNext, 2) + Math.pow(zNext, 2));
+      
+      return heroRadius < boundaryRadius;
+    }
+
     scene.onBeforeRenderObservable.add(() => {
       var keydown = false;
       //Manage the movements of the character (e.g. position, direction)
-      if (inputMap["w"]) {
+      if (inputMap["w"] && isHeroInsideBoundaries(heroSpeed)) {
         hero.moveWithCollisions(hero.forward.scaleInPlace(heroSpeed));
         keydown = true;
       }
-      if (inputMap["s"]) {
+      if (inputMap["s"] && isHeroInsideBoundaries(-heroSpeedBackwards)) {
         hero.moveWithCollisions(hero.forward.scaleInPlace(-heroSpeedBackwards));
         keydown = true;
       }
