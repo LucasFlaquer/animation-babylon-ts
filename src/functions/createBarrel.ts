@@ -1,4 +1,4 @@
-import { Scene, SceneLoader, Mesh, Vector3 } from "@babylonjs/core";
+import { Scene, SceneLoader, Mesh, Vector3, MeshBuilder } from "@babylonjs/core";
 
 export const createBarrel = (id: string, scene: Scene, position: Vector3, callback: (barrel: Mesh) => void) => {
   return SceneLoader.ImportMesh(
@@ -12,10 +12,14 @@ export const createBarrel = (id: string, scene: Scene, position: Vector3, callba
         mesh.setParent(barrel);
         barrel.addChild(mesh);
       });
-      
       barrel.scaling.scaleInPlace(0.015);
+      
+      const cylinder = MeshBuilder.CreateCylinder("barrelCollider", { diameter: .6, height: 2 }, scene);
+      cylinder.setParent(barrel);
+      barrel.addChild(cylinder);
+      
       barrel.position = position;
 
-      callback(barrel);
+      callback(cylinder);
   });
 }

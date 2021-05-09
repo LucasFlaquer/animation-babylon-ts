@@ -1,4 +1,4 @@
-import { ActionManager, ArcRotateCamera, Engine, ExecuteCodeAction, Scene, SceneLoader, TargetCamera, Vector3 } from "@babylonjs/core";
+import { ActionManager, ArcRotateCamera, Engine, ExecuteCodeAction, Scene, SceneLoader, TargetCamera, Vector3, Mesh } from "@babylonjs/core";
 import { buildGround } from "./buildGround";
 import { createSkybox } from "./buildSky";
 import { createCamera, createLight } from "./createCamera";
@@ -15,12 +15,27 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   const skybox = createSkybox(scene)
   skybox.position.y += 20
 
-  createBarrel("1", scene, new Vector3(10), (barrel) => console.log(barrel));
-
+  
   const hero = SceneLoader.ImportMesh("", "https://assets.babylonjs.com/meshes/", "HVGirl.glb", scene, (newMeshes, particleSystems, skeletons, animationGroups) => {
-    const hero = newMeshes[0];
+    const hero = new Mesh('hero', scene);
+    newMeshes[0].setParent(hero);
+    hero.addChild(newMeshes[0]);
     //Scale the model down        
     hero.scaling.scaleInPlace(0.1);
+
+    createBarrel("1", scene, new Vector3(10), (collider) => {
+      collider.actionManager = new ActionManager(scene);
+      collider.actionManager.registerAction(
+        new ExecuteCodeAction(
+          { 
+            trigger: ActionManager.OnIntersectionEnterTrigger, 
+            parameter: hero,
+          },
+          function (event) {
+              console.log('colidiu');
+          })
+      );
+    });
 
     //Hero character variables 
     const heroSpeed = .1;
@@ -103,7 +118,8 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
 
     })
 
-
   });
+
+  scene.collisionsEnabled = true;
   return scene;
 }
