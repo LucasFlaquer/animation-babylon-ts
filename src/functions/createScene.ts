@@ -1,4 +1,4 @@
-import { ActionManager, ArcRotateCamera, Engine, ExecuteCodeAction, Scene, SceneLoader, TargetCamera, Vector3, Mesh, ParticleHelper, AbstractMesh, Sound, ActionEvent } from "@babylonjs/core";
+import { ActionManager, ArcRotateCamera, Engine, ExecuteCodeAction, Scene, SceneLoader, TargetCamera, Vector3, Mesh, ParticleHelper, AbstractMesh, Sound, ActionEvent, ParticleSystem, Texture } from "@babylonjs/core";
 import { buildGround } from "./buildGround";
 import { createSkybox } from "./buildSky";
 import { createCamera, createLight } from "./createCamera";
@@ -62,6 +62,14 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
 
       if (index !== heartIndex) return;
       
+      const particles = new ParticleSystem("particles", 50, scene);
+
+      particles.particleTexture = new Texture('/heart.png', scene);
+      particles.emitter = heart.position;
+      particles.targetStopDuration = 0.5;
+
+      particles.start();
+
       heartIndex++;
       heart.dispose();
 
@@ -87,7 +95,6 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
         }
       });
     }
-
 
     //Hero character variables 
     const heroSpeed = .1;
