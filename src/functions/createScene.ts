@@ -17,6 +17,21 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   const skybox = createSkybox(scene)
   skybox.position.y += 20
 
+  const gui = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+  const totalHearts = 10;
+  let heartIndex = 1;
+
+  const scoreBoard = new TextBlock('scoreBoard', `${heartIndex - 1}/${totalHearts}`);
+  scoreBoard.top = `-${window.screen.height / 2 - 100}px`;
+  scoreBoard.color = '#fff';
+  scoreBoard.fontWeight = 'bold';
+  scoreBoard.fontSize = 32;
+  
+  gui.addControl(scoreBoard);
+
+  function refreshScoreBoard() {
+    scoreBoard.text = `${heartIndex - 1}/${totalHearts}`;
+  }
 
   const hero = SceneLoader.ImportMesh("", "https://assets.babylonjs.com/meshes/", "HVGirl.glb", scene, (newMeshes, particleSystems, skeletons, animationGroups) => {
     const hero = new Mesh('hero', scene);
@@ -35,9 +50,6 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     const walkBackAnim = scene.getAnimationGroupByName("WalkingBack");
     const idleAnim = scene.getAnimationGroupByName("Idle");
     const sambaAnim = scene.getAnimationGroupByName("Samba");
-
-    const totalHearts = 10;
-    let heartIndex = 1;
 
     const generateRandomPosition = () => {
       const x = Math.ceil(Math.random() * 11) * (Math.round(Math.random()) ? 1 : -1); // random between -10 and 10
@@ -77,12 +89,14 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       heart.dispose();
       
       new Sound('heart', '/heart.mp3', scene, null, { loop: false, autoplay: true });
-    
+
       if (heartIndex > totalHearts) {
         endGame();
       } else {
         highlightHeart(heartIndex);
       }
+
+      refreshScoreBoard();
     }
 
     async function explode(mesh: AbstractMesh) {
@@ -101,6 +115,8 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     function startGame() {
       heartIndex = 1;
 
+      refreshScoreBoard();
+      
       const barrel = scene.getMeshByID('barrel');
       if (!barrel) {
         createBarrel('', scene, new Vector3(10), (event) => {
@@ -121,9 +137,6 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     };
     
     function endGame() {
-      // GUI
-      const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
-
       const button = Button.CreateSimpleButton("button", "Reiniciar");
       button.width = 0.1;
       button.height = "40px";
@@ -133,18 +146,11 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
 
       button.onPointerClickObservable.add(function () {
         sambaAnim?.stop();
-        advancedTexture.dispose();
+        button.dispose();
         startGame();
       });
 
-      advancedTexture.addControl(button);    
-
-      const board = new TextBlock('board', `${heartIndex - 1}/${totalHearts}`);
-      board.top = `-${window.screen.height / 2 - 100}px`;
-      board.color = '#fff';
-      board.fontWeight = 'bold';
-      board.fontSize = 32;
-      advancedTexture.addControl(board);    
+      gui.addControl(button);    
 
       sambaAnim?.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
     };
