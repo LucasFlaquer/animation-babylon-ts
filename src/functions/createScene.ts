@@ -65,6 +65,8 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       heartIndex++;
       heart.dispose();
 
+      new Sound('heart', '/heart.mp3', scene, null, { loop: false, autoplay: true });
+
       highlightHeart(heartIndex);
     }
 
