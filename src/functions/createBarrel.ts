@@ -14,7 +14,7 @@ export const createBarrel = (id: string, scene: Scene, position: Vector3, callba
       });
       barrel.scaling.scaleInPlace(0.015);
       
-      const cylinder = MeshBuilder.CreateCylinder("barrelCollider", { diameter: .6, height: 2 }, scene);
+      const cylinder = MeshBuilder.CreateCylinder("barrelCollider", { diameter: .65, height: 2 }, scene);
       cylinder.setParent(barrel);
       barrel.addChild(cylinder);
       

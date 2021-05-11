@@ -1,4 +1,4 @@
-import { ActionManager, ArcRotateCamera, Engine, ExecuteCodeAction, Scene, SceneLoader, TargetCamera, Vector3, Mesh, ParticleHelper, AbstractMesh } from "@babylonjs/core";
+import { ActionManager, ArcRotateCamera, Engine, ExecuteCodeAction, Scene, SceneLoader, TargetCamera, Vector3, Mesh, ParticleHelper, AbstractMesh, Sound } from "@babylonjs/core";
 import { buildGround } from "./buildGround";
 import { createSkybox } from "./buildSky";
 import { createCamera, createLight } from "./createCamera";
@@ -24,12 +24,15 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     hero.scaling.scaleInPlace(0.1);
 
     async function explode(mesh: AbstractMesh) {
+      const { position } = mesh;
       return ParticleHelper.CreateAsync("explosion", scene).then((set) => {
-          set.systems.forEach(s => {
-              s.disposeOnStop = true;
-              s.emitter = mesh.position;
-          });
-          set.start();
+        set.systems.forEach(s => {
+          s.disposeOnStop = true;
+          s.emitter = position;
+        });
+        set.start();
+
+        new Sound('note', '/explosion.mp3', scene, null, { loop: false, autoplay: true });
       });
     }
 
