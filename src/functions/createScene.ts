@@ -68,10 +68,23 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       highlightHeart(heartIndex);
     }
 
-    createHeart('1', scene, new Vector3(-10), collectHeart, () => {
-      highlightHeart(1);
-    });
-    createHeart('2', scene, new Vector3(5), collectHeart);
+    const generateRandomPosition = () => {
+      const x = Math.ceil(Math.random() * 11) * (Math.round(Math.random()) ? 1 : -1); // random between -10 and 10
+      const y = 0;
+      const z = Math.ceil(Math.random() * 11) * (Math.round(Math.random()) ? 1 : -1);
+
+      return new Vector3(x, y, z);
+    }
+
+    for (let i = 0; i < 10; i++) {
+      const position = generateRandomPosition();
+
+      createHeart(`${i + 1}`, scene, position, collectHeart, () => {
+        if (i === 0) {
+          highlightHeart(1);
+        }
+      });
+    }
 
 
     //Hero character variables 
