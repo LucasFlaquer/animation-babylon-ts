@@ -16,14 +16,31 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   const skybox = createSkybox(scene)
   skybox.position.y += 20
 
-  
+
   const hero = SceneLoader.ImportMesh("", "https://assets.babylonjs.com/meshes/", "HVGirl.glb", scene, (newMeshes, particleSystems, skeletons, animationGroups) => {
     const hero = new Mesh('hero', scene);
     newMeshes[0].setParent(hero);
     hero.addChild(newMeshes[0]);
     //Scale the model down        
     hero.scaling.scaleInPlace(0.1);
+
+    //Hero character variables 
+    const heroSpeed = .1;
+    const heroSpeedBackwards = 0.1;
+    const heroRotationSpeed = 0.1;
+    const boundaryRadius = 18;
+    let animating = true;
+    const walkAnim = scene.getAnimationGroupByName("Walking");
+    const walkBackAnim = scene.getAnimationGroupByName("WalkingBack");
+    const idleAnim = scene.getAnimationGroupByName("Idle");
+    const sambaAnim = scene.getAnimationGroupByName("Samba");
+
+    const totalHearts = 1;
     let heartIndex = 1;
+
+    const endGame = () => {
+      sambaAnim?.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
+    };
 
     async function explode(mesh: AbstractMesh) {
       const { position } = mesh;
@@ -43,10 +60,10 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       event.source.parent.dispose();
     });
 
-    
+
     const highlightHeart = (index: number) => {
       const heart = scene.getMeshByID(`heart${index}`);
-      
+
       if (!heart) return;
 
       const meshes = heart.getChildMeshes();
@@ -61,7 +78,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       const index = Number(id.split('heart')[1]);
 
       if (index !== heartIndex) return;
-      
+
       const particles = new ParticleSystem("particles", 50, scene);
 
       particles.particleTexture = new Texture('/heart.png', scene);
@@ -72,10 +89,14 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
 
       heartIndex++;
       heart.dispose();
-
+      
       new Sound('heart', '/heart.mp3', scene, null, { loop: false, autoplay: true });
-
-      highlightHeart(heartIndex);
+    
+      if (heartIndex > totalHearts) {
+        endGame();
+      } else {
+        highlightHeart(heartIndex);
+      }
     }
 
     const generateRandomPosition = () => {
@@ -86,7 +107,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       return new Vector3(x, y, z);
     }
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < totalHearts; i++) {
       const position = generateRandomPosition();
 
       createHeart(`${i + 1}`, scene, position, collectHeart, () => {
@@ -95,17 +116,6 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
         }
       });
     }
-
-    //Hero character variables 
-    const heroSpeed = .1;
-    const heroSpeedBackwards = 0.1;
-    const heroRotationSpeed = 0.1;
-    const boundaryRadius = 18;
-    let animating = true;
-    const walkAnim = scene.getAnimationGroupByName("Walking");
-    const walkBackAnim = scene.getAnimationGroupByName("WalkingBack");
-    const idleAnim = scene.getAnimationGroupByName("Idle");
-    const sambaAnim = scene.getAnimationGroupByName("Samba");
 
     const camera1 = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, new Vector3(0, 0, 0), scene);
     scene.activeCamera = camera1;
@@ -133,7 +143,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       const xNext = hero.position.x + speed + x;
 
       const heroRadius = Math.sqrt(Math.pow(xNext, 2) + Math.pow(zNext, 2));
-      
+
       return heroRadius < boundaryRadius;
     }
 
