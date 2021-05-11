@@ -1,4 +1,4 @@
-import { ActionManager, ArcRotateCamera, Engine, ExecuteCodeAction, Scene, SceneLoader, TargetCamera, Vector3, Mesh } from "@babylonjs/core";
+import { ActionManager, ArcRotateCamera, Engine, ExecuteCodeAction, Scene, SceneLoader, TargetCamera, Vector3, Mesh, ParticleHelper, AbstractMesh } from "@babylonjs/core";
 import { buildGround } from "./buildGround";
 import { createSkybox } from "./buildSky";
 import { createCamera, createLight } from "./createCamera";
@@ -23,6 +23,16 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     //Scale the model down        
     hero.scaling.scaleInPlace(0.1);
 
+    async function explode(mesh: AbstractMesh) {
+      return ParticleHelper.CreateAsync("explosion", scene).then((set) => {
+          set.systems.forEach(s => {
+              s.disposeOnStop = true;
+              s.emitter = mesh.position;
+          });
+          set.start();
+      });
+    }
+
     createBarrel("1", scene, new Vector3(10), (collider) => {
       collider.actionManager = new ActionManager(scene);
       collider.actionManager.registerAction(
@@ -32,7 +42,8 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
             parameter: hero,
           },
           function (event) {
-              console.log('colidiu');
+              explode(event.source.parent);
+              event.source.parent.dispose();
           })
       );
     });
