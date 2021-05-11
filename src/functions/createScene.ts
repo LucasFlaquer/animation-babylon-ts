@@ -4,7 +4,7 @@ import { createSkybox } from "./buildSky";
 import { createCamera, createLight } from "./createCamera";
 import { loadHero } from "./loadHero";
 import { createBarrel } from "./createBarrel";
-import { createHearth } from "./createHearth";
+import { createHeart } from "./createHeart";
 
 export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   const scene = new Scene(engine)
@@ -37,34 +37,14 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       });
     }
 
-    createBarrel("1", scene, new Vector3(10), (collider) => {
-      collider.actionManager = new ActionManager(scene);
-      collider.actionManager.registerAction(
-        new ExecuteCodeAction(
-          { 
-            trigger: ActionManager.OnIntersectionEnterTrigger, 
-            parameter: hero,
-          },
-          function (event) {
-              explode(event.source.parent);
-              event.source.parent.dispose();
-          })
-      );
+    createBarrel('1', scene, new Vector3(10), (event) => {
+      explode(event.source.parent);
+      event.source.parent.dispose();
     });
 
-    createHearth('1', scene, new Vector3(-10), (collider) => {
-      collider.actionManager = new ActionManager(scene);
-      collider.actionManager.registerAction(
-        new ExecuteCodeAction(
-          { 
-            trigger: ActionManager.OnIntersectionEnterTrigger, 
-            parameter: hero,
-          },
-          function (event) {
-              explode(event.source.parent);
-              event.source.parent.dispose();
-          })
-      );
+    createHeart('1', scene, new Vector3(-10), (event) => {
+      explode(event.source.parent);
+      event.source.parent.dispose();
     });
 
     //Hero character variables 

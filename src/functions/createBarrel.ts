@@ -1,6 +1,6 @@
-import { Scene, SceneLoader, Mesh, Vector3, MeshBuilder } from "@babylonjs/core";
+import { Scene, SceneLoader, Mesh, Vector3, MeshBuilder, ActionManager, ExecuteCodeAction, ActionEvent } from "@babylonjs/core";
 
-export const createBarrel = (id: string, scene: Scene, position: Vector3, callback: (barrel: Mesh) => void) => {
+export const createBarrel = (id: string, scene: Scene, position: Vector3, onCollide: (event: ActionEvent) => void) => {
   return SceneLoader.ImportMesh(
   "",
   "https://assets.babylonjs.com/meshes/", 
@@ -14,12 +14,26 @@ export const createBarrel = (id: string, scene: Scene, position: Vector3, callba
       });
       barrel.scaling.scaleInPlace(0.015);
       
-      const cylinder = MeshBuilder.CreateCylinder("barrelCollider", { diameter: .65, height: 2 }, scene);
-      cylinder.setParent(barrel);
-      barrel.addChild(cylinder);
+      const collider = MeshBuilder.CreateCylinder("barrelCollider", { diameter: .65, height: 2 }, scene);
+      collider.setParent(barrel);
+      barrel.addChild(collider);
       
       barrel.position = position;
 
-      callback(cylinder);
+      const hero = scene.getMeshByID('hero');
+      if (!hero) {
+        return;
+      }
+      
+      collider.actionManager = new ActionManager(scene);
+      collider.actionManager.registerAction(
+        new ExecuteCodeAction(
+          { 
+            trigger: ActionManager.OnIntersectionEnterTrigger, 
+            parameter: hero,
+          },
+          onCollide
+        )
+      );
   });
 }
