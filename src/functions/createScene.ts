@@ -1,5 +1,5 @@
 import { ActionManager, ArcRotateCamera, Engine, ExecuteCodeAction, Scene, SceneLoader, TargetCamera, Vector3, Mesh, ParticleHelper, AbstractMesh, Sound, ActionEvent, ParticleSystem, Texture } from "@babylonjs/core";
-import { AdvancedDynamicTexture, Button } from "@babylonjs/gui";
+import { AdvancedDynamicTexture, Button, TextBlock } from "@babylonjs/gui";
 import { buildGround } from "./buildGround";
 import { createSkybox } from "./buildSky";
 import { createCamera, createLight } from "./createCamera";
@@ -36,7 +36,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     const idleAnim = scene.getAnimationGroupByName("Idle");
     const sambaAnim = scene.getAnimationGroupByName("Samba");
 
-    const totalHearts = 1;
+    const totalHearts = 10;
     let heartIndex = 1;
 
     const generateRandomPosition = () => {
@@ -101,9 +101,9 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     function startGame() {
       heartIndex = 1;
 
-      const barrel = scene.getMeshByID('barrel1');
+      const barrel = scene.getMeshByID('barrel');
       if (!barrel) {
-        createBarrel('1', scene, new Vector3(10), (event) => {
+        createBarrel('', scene, new Vector3(10), (event) => {
           explode(event.source.parent);
           event.source.parent.dispose();
         });
@@ -122,21 +122,29 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     
     function endGame() {
       // GUI
-      var advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+      const advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
 
-      var button = Button.CreateSimpleButton("button", "Reiniciar");
+      const button = Button.CreateSimpleButton("button", "Reiniciar");
       button.width = 0.1;
       button.height = "40px";
       button.color = "white";
       button.background = "green";
-      button.top = "-300px";
-      advancedTexture.addControl(button);    
+      button.top = `${window.screen.height / 2 - 200}px`;
 
       button.onPointerClickObservable.add(function () {
         sambaAnim?.stop();
         advancedTexture.dispose();
         startGame();
       });
+
+      advancedTexture.addControl(button);    
+
+      const board = new TextBlock('board', `${heartIndex - 1}/${totalHearts}`);
+      board.top = `-${window.screen.height / 2 - 100}px`;
+      board.color = '#fff';
+      board.fontWeight = 'bold';
+      board.fontSize = 32;
+      advancedTexture.addControl(board);    
 
       sambaAnim?.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
     };
