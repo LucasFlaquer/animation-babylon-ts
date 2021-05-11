@@ -1,4 +1,4 @@
-import { ActionManager, ArcRotateCamera, Engine, ExecuteCodeAction, Scene, SceneLoader, TargetCamera, Vector3, Mesh, ParticleHelper, AbstractMesh, Sound } from "@babylonjs/core";
+import { ActionManager, ArcRotateCamera, Engine, ExecuteCodeAction, Scene, SceneLoader, TargetCamera, Vector3, Mesh, ParticleHelper, AbstractMesh, Sound, ActionEvent } from "@babylonjs/core";
 import { buildGround } from "./buildGround";
 import { createSkybox } from "./buildSky";
 import { createCamera, createLight } from "./createCamera";
@@ -23,6 +23,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     hero.addChild(newMeshes[0]);
     //Scale the model down        
     hero.scaling.scaleInPlace(0.1);
+    let heartIndex = 1;
 
     async function explode(mesh: AbstractMesh) {
       const { position } = mesh;
@@ -42,10 +43,36 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       event.source.parent.dispose();
     });
 
-    createHeart('1', scene, new Vector3(-10), (event) => {
-      explode(event.source.parent);
-      event.source.parent.dispose();
+    
+    const highlightHeart = (index: number) => {
+      const heart = scene.getMeshByID(`heart${index}`);
+      
+      if (!heart) return;
+
+      const meshes = heart.getChildMeshes();
+      meshes.forEach(mesh => {
+        mesh.scaling.scaleInPlace(2);
+      })
+    }
+
+    const collectHeart = (event: ActionEvent) => {
+      const heart = event.source.parent;
+      const { id } = heart;
+      const index = Number(id.split('heart')[1]);
+
+      if (index !== heartIndex) return;
+      
+      heartIndex++;
+      heart.dispose();
+
+      highlightHeart(heartIndex);
+    }
+
+    createHeart('1', scene, new Vector3(-10), collectHeart, () => {
+      highlightHeart(1);
     });
+    createHeart('2', scene, new Vector3(5), collectHeart);
+
 
     //Hero character variables 
     const heroSpeed = .1;
