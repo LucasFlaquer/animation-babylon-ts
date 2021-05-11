@@ -1,4 +1,5 @@
 import { ActionManager, ArcRotateCamera, Engine, ExecuteCodeAction, Scene, SceneLoader, TargetCamera, Vector3, Mesh, ParticleHelper, AbstractMesh, Sound, ActionEvent, ParticleSystem, Texture } from "@babylonjs/core";
+import { AdvancedDynamicTexture, Button } from "@babylonjs/gui";
 import { buildGround } from "./buildGround";
 import { createSkybox } from "./buildSky";
 import { createCamera, createLight } from "./createCamera";
@@ -38,28 +39,13 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     const totalHearts = 1;
     let heartIndex = 1;
 
-    const endGame = () => {
-      sambaAnim?.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
-    };
+    const generateRandomPosition = () => {
+      const x = Math.ceil(Math.random() * 11) * (Math.round(Math.random()) ? 1 : -1); // random between -10 and 10
+      const y = 0;
+      const z = Math.ceil(Math.random() * 11) * (Math.round(Math.random()) ? 1 : -1);
 
-    async function explode(mesh: AbstractMesh) {
-      const { position } = mesh;
-      return ParticleHelper.CreateAsync("explosion", scene).then((set) => {
-        set.systems.forEach(s => {
-          s.disposeOnStop = true;
-          s.emitter = position;
-        });
-        set.start();
-
-        new Sound('note', '/explosion.mp3', scene, null, { loop: false, autoplay: true });
-      });
+      return new Vector3(x, y, z);
     }
-
-    createBarrel('1', scene, new Vector3(10), (event) => {
-      explode(event.source.parent);
-      event.source.parent.dispose();
-    });
-
 
     const highlightHeart = (index: number) => {
       const heart = scene.getMeshByID(`heart${index}`);
@@ -99,23 +85,61 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       }
     }
 
-    const generateRandomPosition = () => {
-      const x = Math.ceil(Math.random() * 11) * (Math.round(Math.random()) ? 1 : -1); // random between -10 and 10
-      const y = 0;
-      const z = Math.ceil(Math.random() * 11) * (Math.round(Math.random()) ? 1 : -1);
+    async function explode(mesh: AbstractMesh) {
+      const { position } = mesh;
+      return ParticleHelper.CreateAsync("explosion", scene).then((set) => {
+        set.systems.forEach(s => {
+          s.disposeOnStop = true;
+          s.emitter = position;
+        });
+        set.start();
 
-      return new Vector3(x, y, z);
-    }
-
-    for (let i = 0; i < totalHearts; i++) {
-      const position = generateRandomPosition();
-
-      createHeart(`${i + 1}`, scene, position, collectHeart, () => {
-        if (i === 0) {
-          highlightHeart(1);
-        }
+        new Sound('note', '/explosion.mp3', scene, null, { loop: false, autoplay: true });
       });
     }
+
+    function startGame() {
+      heartIndex = 1;
+
+      const barrel = scene.getMeshByID('barrel1');
+      if (!barrel) {
+        createBarrel('1', scene, new Vector3(10), (event) => {
+          explode(event.source.parent);
+          event.source.parent.dispose();
+        });
+      }
+
+      for (let i = 0; i < totalHearts; i++) {
+        const position = generateRandomPosition();
+  
+        createHeart(`${i + 1}`, scene, position, collectHeart, () => {
+          if (i === 0) {
+            highlightHeart(1);
+          }
+        });
+      }
+    };
+    
+    function endGame() {
+      // GUI
+      var advancedTexture = AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+      var button = Button.CreateSimpleButton("button", "Reiniciar");
+      button.width = 0.1;
+      button.height = "40px";
+      button.color = "white";
+      button.background = "green";
+      button.top = "-300px";
+      advancedTexture.addControl(button);    
+
+      button.onPointerClickObservable.add(function () {
+        sambaAnim?.stop();
+        advancedTexture.dispose();
+        startGame();
+      });
+
+      sambaAnim?.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
+    };
 
     const camera1 = new ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 15, new Vector3(0, 0, 0), scene);
     scene.activeCamera = camera1;
@@ -187,6 +211,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
 
     })
 
+    startGame();
   });
 
   scene.collisionsEnabled = true;
