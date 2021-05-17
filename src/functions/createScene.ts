@@ -35,6 +35,31 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     scoreBoard.text = `${heartIndex - 1}/${totalHearts}`;
   }
 
+  const airplane = scene.getMeshByID('aiirplane');
+  if (!airplane) {
+    createMesh('', scene, new Vector3(5, 2.3), 'aerobatic_plane.glb', 'air', 15)
+  }
+  const alien = scene.getMeshByID('alien');
+  if (!alien) {
+    createMesh('', scene, new Vector3(2, 1.5, -20), 'alien.glb', 'alien', 2.5)
+  }
+  const chair = scene.getMeshByID('chair');
+  if (!chair) {
+    createMesh('', scene, new Vector3(-15), 'clothFolds.glb', 'chair', .5)
+  }
+  const dragon = scene.getMeshByID('dragon');
+  if (!dragon) {
+    createMesh('', scene, new Vector3(-3, 1, -20), 'toast_acrobatics.glb', 'dragon', 12)
+  }
+  const helmet = scene.getMeshByID('helmet');
+  if (!helmet) {
+    createMesh('', scene, new Vector3(23, 1, 5), 'shark.glb', 'helmet', .53)
+  }
+  const venlitaltor = scene.getMeshByID('ventilator');
+  if (!venlitaltor) {
+    createMesh('', scene, new Vector3(2, .5, -20), 'ufo.glb', 'ventilator', 8)
+  }
+
   SceneLoader.ImportMesh("", "https://assets.babylonjs.com/meshes/", "HVGirl.glb", scene, (newMeshes, particleSystems, skeletons, animationGroups) => {
     const hero = new Mesh('hero', scene);
     newMeshes[0].setParent(hero);
@@ -138,30 +163,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
         });
       }
 
-      const airplane = scene.getMeshByID('aiirplane');
-      if (!airplane) {
-        createMesh('', scene, new Vector3(5, 2.3), 'aerobatic_plane.glb', 'air', 15)
-      }
-      const alien = scene.getMeshByID('alien');
-      if (!alien) {
-        createMesh('', scene, new Vector3(2, 1.5, -20), 'alien.glb', 'alien', 2.5)
-      }
-      const chair = scene.getMeshByID('chair');
-      if (!chair) {
-        createMesh('', scene, new Vector3(-15), 'clothFolds.glb', 'chair', .5)
-      }
-      const dragon = scene.getMeshByID('dragon');
-      if (!dragon) {
-        createMesh('', scene, new Vector3(-3, 1, -20), 'toast_acrobatics.glb', 'dragon', 12)
-      }
-      const helmet = scene.getMeshByID('helmet');
-      if (!helmet) {
-        createMesh('', scene, new Vector3(23, 1, 5), 'shark.glb', 'helmet', .53)
-      }
-      const venlitaltor = scene.getMeshByID('ventilator');
-      if (!venlitaltor) {
-        createMesh('', scene, new Vector3(2, .5, -20), 'ufo.glb', 'ventilator', 8)
-      }
+
     };
 
     function endGame() {
@@ -217,7 +219,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     scene.onBeforeRenderObservable.add(() => {
       if (isGameOver)
         return;
-      
+
       var keydown = false;
       //Manage the movements of the character (e.g. position, direction)
       if (inputMap["w"] && isHeroInsideBoundaries(heroSpeed)) {
