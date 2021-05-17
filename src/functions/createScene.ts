@@ -23,13 +23,19 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   let heartIndex = 1;
   let isGameOver = false;
 
+  const collaborators = new TextBlock('collaborators', 'Lucas Flaquer - 180952 && Gustavo Daltoé - 180974');
+  collaborators.top = `-${window.screen.height / 2 - 100}px`;
+  collaborators.color = '#fff';
+  collaborators.fontSize = 18;
+
   const scoreBoard = new TextBlock('scoreBoard', `${heartIndex - 1}/${totalHearts}`);
-  scoreBoard.top = `-${window.screen.height / 2 - 100}px`;
+  scoreBoard.top = `-${window.screen.height / 2 - 150}px`;
   scoreBoard.color = '#fff';
   scoreBoard.fontWeight = 'bold';
   scoreBoard.fontSize = 32;
 
   gui.addControl(scoreBoard);
+  gui.addControl(collaborators);
 
   function refreshScoreBoard() {
     scoreBoard.text = `${heartIndex - 1}/${totalHearts}`;
