@@ -6,6 +6,7 @@ import { createCamera, createLight } from "./createCamera";
 import { loadHero } from "./loadHero";
 import { createBarrel } from "./createBarrel";
 import { createHeart } from "./createHeart";
+import { createMesh } from "./createMesh";
 
 export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   const scene = new Scene(engine)
@@ -26,14 +27,14 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   scoreBoard.color = '#fff';
   scoreBoard.fontWeight = 'bold';
   scoreBoard.fontSize = 32;
-  
+
   gui.addControl(scoreBoard);
 
   function refreshScoreBoard() {
     scoreBoard.text = `${heartIndex - 1}/${totalHearts}`;
   }
 
-  const hero = SceneLoader.ImportMesh("", "https://assets.babylonjs.com/meshes/", "HVGirl.glb", scene, (newMeshes, particleSystems, skeletons, animationGroups) => {
+  SceneLoader.ImportMesh("", "https://assets.babylonjs.com/meshes/", "HVGirl.glb", scene, (newMeshes, particleSystems, skeletons, animationGroups) => {
     const hero = new Mesh('hero', scene);
     newMeshes[0].setParent(hero);
     hero.addChild(newMeshes[0]);
@@ -42,7 +43,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
 
     //Hero character variables 
     const heroSpeed = .1;
-    const heroSpeedBackwards = 0.1;
+    const heroSpeedBackwards = 0.09;
     const heroRotationSpeed = 0.1;
     const boundaryRadius = 18;
     let animating = true;
@@ -87,7 +88,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
 
       heartIndex++;
       heart.dispose();
-      
+
       new Sound('heart', '/heart.mp3', scene, null, { loop: false, autoplay: true });
 
       if (heartIndex > totalHearts) {
@@ -116,7 +117,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       heartIndex = 1;
 
       refreshScoreBoard();
-      
+
       const barrel = scene.getMeshByID('barrel');
       if (!barrel) {
         createBarrel('', scene, new Vector3(10), (event) => {
@@ -124,10 +125,34 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
           event.source.parent.dispose();
         });
       }
+      const airplane = scene.getMeshByID('aiirplane');
+      if (!airplane) {
+        createMesh('', scene, new Vector3(5, 2.3), 'aerobatic_plane.glb', 'air', 15)
+      }
+      const alien = scene.getMeshByID('alien');
+      if (!alien) {
+        createMesh('', scene, new Vector3(-4, 1.2, -20), 'alien.glb', 'alien', 2.5)
+      }
+      const chair = scene.getMeshByID('chair');
+      if (!chair) {
+        createMesh('', scene, new Vector3(-15), 'clothFolds.glb', 'chair', .5)
+      }
+      const dragon = scene.getMeshByID('dragon');
+      if (!dragon) {
+        createMesh('', scene, new Vector3(0, 1, 20), 'Dude/dude.babylon', 'dragon', 50)
+      }
+      const helmet = scene.getMeshByID('helmet');
+      if (!helmet) {
+        createMesh('', scene, new Vector3(23, 1, 5), 'shark.glb', 'helmet', .53)
+      }
+      const venlitaltor = scene.getMeshByID('ventilator');
+      if (!venlitaltor) {
+        createMesh('', scene, new Vector3(2, .5, 20), 'ufo.glb', 'ventilator', 15)
+      }
 
       for (let i = 0; i < totalHearts; i++) {
         const position = generateRandomPosition();
-  
+
         createHeart(`${i + 1}`, scene, position, collectHeart, () => {
           if (i === 0) {
             highlightHeart(1);
@@ -135,7 +160,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
         });
       }
     };
-    
+
     function endGame() {
       const button = Button.CreateSimpleButton("button", "Reiniciar");
       button.width = 0.1;
@@ -150,7 +175,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
         startGame();
       });
 
-      gui.addControl(button);    
+      gui.addControl(button);
 
       sambaAnim?.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
     };
@@ -214,12 +239,36 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
             if (walkBackAnim)
               walkBackAnim.start(true, 1.0, walkBackAnim.from, walkBackAnim.to, false);
           }
-
+          else if
+            (inputMap["b"]) {
+            //Samba!
+            if (sambaAnim)
+              sambaAnim.start(true, 1.0, sambaAnim.from, sambaAnim.to, false);
+          }
           else {
             //Walk
             if (walkAnim)
               walkAnim.start(true, 1.0, walkAnim.from, walkAnim.to, false);
           }
+        }
+      }
+      else {
+
+        if (animating) {
+          //Default animation is idle when no key is down   
+          if (idleAnim)
+            idleAnim.start(true, 1.0, idleAnim.from, idleAnim.to, false);
+
+          //Stop all animations besides Idle Anim when no key is down
+          if (sambaAnim && walkAnim && walkBackAnim) {
+
+            sambaAnim.stop();
+            walkAnim.stop();
+            walkBackAnim.stop();
+          }
+
+          //Ensure animation are played only once per rendering loop
+          animating = false;
         }
       }
 
