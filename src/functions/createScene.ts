@@ -21,6 +21,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   const gui = AdvancedDynamicTexture.CreateFullscreenUI("UI");
   const totalHearts = 10;
   let heartIndex = 1;
+  let isGameOver = false;
 
   const scoreBoard = new TextBlock('scoreBoard', `${heartIndex - 1}/${totalHearts}`);
   scoreBoard.top = `-${window.screen.height / 2 - 100}px`;
@@ -114,6 +115,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     }
 
     function startGame() {
+      isGameOver = false;
       heartIndex = 1;
 
       refreshScoreBoard();
@@ -162,6 +164,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     };
 
     function endGame() {
+      isGameOver = true;
       const button = Button.CreateSimpleButton("button", "Reiniciar");
       button.width = 0.1;
       button.height = "40px";
@@ -211,6 +214,9 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     }
 
     scene.onBeforeRenderObservable.add(() => {
+      if (isGameOver)
+        return;
+      
       var keydown = false;
       //Manage the movements of the character (e.g. position, direction)
       if (inputMap["w"] && isHeroInsideBoundaries(heroSpeed)) {
