@@ -127,6 +127,17 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
           event.source.parent.dispose();
         });
       }
+
+      for (let i = 0; i < totalHearts; i++) {
+        const position = generateRandomPosition();
+
+        createHeart(`${i + 1}`, scene, position, collectHeart, () => {
+          if (i === 0) {
+            highlightHeart(1);
+          }
+        });
+      }
+
       const airplane = scene.getMeshByID('aiirplane');
       if (!airplane) {
         createMesh('', scene, new Vector3(5, 2.3), 'aerobatic_plane.glb', 'air', 15)
@@ -150,16 +161,6 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       const venlitaltor = scene.getMeshByID('ventilator');
       if (!venlitaltor) {
         createMesh('', scene, new Vector3(2, .5, -20), 'ufo.glb', 'ventilator', 8)
-      }
-
-      for (let i = 0; i < totalHearts; i++) {
-        const position = generateRandomPosition();
-
-        createHeart(`${i + 1}`, scene, position, collectHeart, () => {
-          if (i === 0) {
-            highlightHeart(1);
-          }
-        });
       }
     };
 

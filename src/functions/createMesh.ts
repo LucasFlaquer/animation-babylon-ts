@@ -1,6 +1,6 @@
 import { Scene, SceneLoader, Mesh, Vector3, MeshBuilder, ActionManager, ExecuteCodeAction, ActionEvent } from "@babylonjs/core";
 
-export const createMesh = (
+export const createMesh = async (
   id: string,
   scene: Scene,
   position: Vector3,
@@ -9,18 +9,18 @@ export const createMesh = (
   scale: number,
 ) => {
 
-  return SceneLoader.ImportMesh(
+  return SceneLoader.ImportMeshAsync(
     "",
     "https://assets.babylonjs.com/meshes/",
     mesh,
     scene,
-    function (meshes) {
-      const barrel = new Mesh(`${meshName}-${id}`, scene);
-      meshes.forEach(mesh => {
-        mesh.setParent(barrel);
-        barrel.addChild(mesh);
-      });
-      barrel.scaling.scaleInPlace(scale);
-      barrel.position = position;
+  ).then(function ({ meshes }) {
+    const barrel = new Mesh(`${meshName}-${id}`, scene);
+    meshes.forEach(mesh => {
+      mesh.setParent(barrel);
+      barrel.addChild(mesh);
     });
+    barrel.scaling.scaleInPlace(scale);
+    barrel.position = position;
+  });
 }
