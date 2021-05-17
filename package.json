@@ -18,6 +18,7 @@
     "@babylonjs/inspector": "^4.2.0"
   },
   "scripts": {
+    "heroku-prebuild": "npm install --dev",
     "dev": "webpack serve",
     "build": "webpack"
   }
