@@ -14,7 +14,7 @@ export function buildGround(scene: Scene) {
 
   const largeGround = MeshBuilder.CreateGroundFromHeightMap(
     "largeGround",
-    "https://assets.babylonjs.com/environments/villageheightmap.png",
+    "assets/groundHeight.png",
     { width: 150, height: 150, subdivisions: 20, minHeight: 0, maxHeight: 10 },
     scene
   )
