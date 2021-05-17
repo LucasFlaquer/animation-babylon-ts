@@ -106,7 +106,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
 
       const particles = new ParticleSystem("particles", 50, scene);
 
-      particles.particleTexture = new Texture('/heart.png', scene);
+      particles.particleTexture = new Texture('/assets/heart.png', scene);
       particles.emitter = heart.position;
       particles.targetStopDuration = 0.5;
 
@@ -115,7 +115,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       heartIndex++;
       heart.dispose();
 
-      new Sound('heart', '/heart.mp3', scene, null, { loop: false, autoplay: true });
+      new Sound('heart', '/assets/heart.mp3', scene, null, { loop: false, autoplay: true });
 
       if (heartIndex > totalHearts) {
         endGame();
@@ -135,7 +135,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
         });
         set.start();
 
-        new Sound('note', '/explosion.mp3', scene, null, { loop: false, autoplay: true });
+        new Sound('note', '/assets/explosion.mp3', scene, null, { loop: false, autoplay: true });
       });
     }
 

@@ -20,7 +20,7 @@ module.exports = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: "./src/assets/skybox", to: "assets/skybox" },
+        { from: "./src/assets", to: "assets" },
       ],
     }),
   ].filter(Boolean),
