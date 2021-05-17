@@ -139,7 +139,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       }
       const dragon = scene.getMeshByID('dragon');
       if (!dragon) {
-        createMesh('', scene, new Vector3(0, 1, 20), 'Dude/dude.babylon', 'dragon', 50)
+        createMesh('', scene, new Vector3(-3, 1, -20), 'toast_acrobatics.glb', 'dragon', 12)
       }
       const helmet = scene.getMeshByID('helmet');
       if (!helmet) {
@@ -147,7 +147,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
       }
       const venlitaltor = scene.getMeshByID('ventilator');
       if (!venlitaltor) {
-        createMesh('', scene, new Vector3(2, .5, 20), 'ufo.glb', 'ventilator', 15)
+        createMesh('', scene, new Vector3(2, .5, 20), 'ufo.glb', 'ventilator', 8)
       }
 
       for (let i = 0; i < totalHearts; i++) {
