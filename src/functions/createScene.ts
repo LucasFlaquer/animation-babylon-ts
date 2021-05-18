@@ -14,7 +14,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   camera.attachControl(canvas, true);
   const light = createLight(scene)
 
-  const { ground, largeGround } = buildGround(scene)
+  buildGround(scene)
   const skybox = createSkybox(scene)
   skybox.position.y += 20
 
@@ -59,7 +59,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
   }
   const helmet = scene.getMeshByID('helmet');
   if (!helmet) {
-    createMesh('', scene, new Vector3(23, 1, 5), 'shark.glb', 'helmet', .53)
+    createMesh('', scene, new Vector3(20, 1, 5), 'shark.glb', 'helmet', .53)
   }
   const venlitaltor = scene.getMeshByID('ventilator');
   if (!venlitaltor) {
@@ -77,7 +77,7 @@ export const createScene = (engine: Engine, canvas: HTMLCanvasElement) => {
     const heroSpeed = .1;
     const heroSpeedBackwards = 0.09;
     const heroRotationSpeed = 0.1;
-    const boundaryRadius = 18;
+    const boundaryRadius = 20;
     let animating = true;
     const walkAnim = scene.getAnimationGroupByName("Walking");
     const walkBackAnim = scene.getAnimationGroupByName("WalkingBack");
